@@ -204,6 +204,7 @@ const RACE = ["American Indian / Alaska Native","Asian","Black, African American
 const GENDER = ["Woman","Man","Nonbinary","Something else","Prefer not to say"];
 const EDU = ["Less than high school","High school","Some college","2-year degree","4-year degree","Professional degree","Doctorate","Other"];
 const EMOTIONS = ["Hope","Fear","Anger","Pride","Courage","Isolation","Frustration","Determination","Belonging","Hopelessness","Anxiety","Solidarity","Joy","Burnout","Dignity","Shame","Weariness"];
+const INVOLVE = ["As an active member of an organization","By protesting or taking action regularly","By going to a protest or action once or twice","I haven't been involved"];
 
 /* ---------- state ---------- */
 const state = { answers:{}, demo:{}, emotions:{} };
@@ -310,6 +311,11 @@ function renderExperience(){
     </div>
 
     <div class="field">
+      <label>${RECALL}, how have you taken part in civic or political life? <span class="opt-note">choose what fits best</span></label>
+      <div class="pill-row">${INVOLVE.map((a,k)=>`<button class="pill ${state.demo.involve===k?'sel':''}" onclick="state.demo.involve=${k};renderExperience()">${a}</button>`).join('')}</div>
+    </div>
+
+    <div class="field" style="margin-top:28px">
       <label>${RECALL.replace('In','Over')}, how often have you taken part in political education or training?</label>
       <div class="pill-row">${ANCHORS.map((a,k)=>`<button class="pill ${state.demo.poled===k?'sel':''}" onclick="state.demo.poled=${k};renderExperience()">${a}</button>`).join('')}</div>
     </div>
