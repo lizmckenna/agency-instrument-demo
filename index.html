@@ -202,7 +202,7 @@ const CONSTRUCTS = [
 const RACE = ["American Indian / Alaska Native","Asian","Black, African American","Black, African","Hispanic / Latino","Middle Eastern","Native Hawaiian / Pacific Islander","White","Something else","Prefer not to say"];
 const GENDER = ["Woman","Man","Nonbinary","Something else","Prefer not to say"];
 const EDU = ["Less than high school","High school","Some college","2-year degree","4-year degree","Professional degree","Doctorate","Other"];
-const EMOTIONS = ["Fear","Hope","Anger","Pride","Courage","Isolation"];
+const EMOTIONS = ["Hope","Fear","Anger","Pride","Courage","Isolation","Frustration","Determination","Belonging","Hopelessness","Anxiety","Solidarity","Joy","Burnout"];
 
 /* ---------- state ---------- */
 const state = { answers:{}, demo:{}, emotions:{} };
@@ -308,7 +308,7 @@ function renderContext(){
     </div>
 
     <div class="field" style="display:flex;gap:14px">
-      <div style="flex:1"><label>Your name</label><input type="text" placeholder="First and last" value="${state.demo.name||''}" oninput="state.demo.name=this.value"></div>
+      <div style="flex:1"><label>Your name <span class="opt-note">optional</span></label><input type="text" placeholder="First and last" value="${state.demo.name||''}" oninput="state.demo.name=this.value"></div>
       <div style="flex:1"><label>Your organization</label><input type="text" placeholder="Where you organize" value="${state.demo.org||''}" oninput="state.demo.org=this.value"></div>
     </div>
 
@@ -336,7 +336,7 @@ function renderContext(){
     </div>
 
     <div class="field" style="margin-top:28px">
-      <label>${RECALL}, which have you felt about your civic or political life?</label>
+      <label>${RECALL}, which have you felt about your civic or political life? <span class="opt-note">select all that apply</span></label>
       <div class="pill-row">${EMOTIONS.map(e=>`<button class="pill ${state.emotions[e]?'sel':''}" onclick="state.emotions['${e}']=!state.emotions['${e}'];renderContext()">${e}</button>`).join('')}</div>
     </div>
 
