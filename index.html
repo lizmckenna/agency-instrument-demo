@@ -119,6 +119,11 @@
   .group-sub{font-size:13.5px;color:var(--mute);margin:0 0 20px;}
   .hidden{display:none;}
   .center{text-align:center;}
+  .site-credit{max-width:680px;margin:0 auto;padding:20px 24px 44px;border-top:1px solid var(--rule-soft);
+    font-size:12px;color:var(--mute);text-align:center;line-height:1.65;}
+  .site-credit a{color:var(--mute);text-decoration:underline;text-underline-offset:2px;}
+  .site-credit a:hover{color:var(--cobalt);}
+  .site-credit b{color:var(--ink-2);font-weight:600;}
   @media(max-width:560px){
     h1{font-size:30px;} .scale{gap:5px;} .opt{padding:10px 3px 8px;} .opt .lab{font-size:10px;}
   }
@@ -132,6 +137,11 @@
   <div class="rail"><div class="rail-fill" id="rail"></div></div>
 
   <div class="stage" id="stage"></div>
+
+  <footer class="site-credit">
+    A project of the <a href="https://www.dpifund.org/" target="_blank" rel="noopener">DPI Fund</a> and <a href="https://civicpowerlab.us/" target="_blank" rel="noopener">Civic Power Lab</a>.<br>
+    Instrument design and analysis by <b>Miriam McKinney Gray</b>, McKinney Gray Analytics LLC.
+  </footer>
 
 <script>
 /* ---------- instrument config ---------- */
