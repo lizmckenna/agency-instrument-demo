@@ -110,6 +110,11 @@
   .bar{height:9px;background:var(--rule-soft);border-radius:999px;overflow:hidden;}
   .bar-fill{height:100%;border-radius:999px;width:0;transition:width .7s cubic-bezier(.4,0,.2,1);}
   .bar-desc{font-size:12.5px;color:var(--mute);margin-top:6px;}
+  .group{margin-top:30px;}
+  .group-head{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--rule);padding-top:22px;margin-bottom:3px;}
+  .group-name{font-family:var(--display);font-weight:700;font-size:23px;letter-spacing:-0.01em;}
+  .group-score{font-family:var(--mono);font-size:15px;color:var(--cobalt);}
+  .group-sub{font-size:13.5px;color:var(--mute);margin:0 0 20px;}
   .hidden{display:none;}
   .center{text-align:center;}
   @media(max-width:560px){
@@ -119,7 +124,7 @@
 </head>
 <body>
   <div class="topbar">
-    <div class="wordmark">Civic Power<span class="dot">·</span>Lab<span class="badge-crm">Groundwork</span></div>
+    <div class="wordmark">Agency<span class="dot">·</span>Instrument</div>
     <div class="badge-dev">Dev preview</div>
   </div>
   <div class="rail"><div class="rail-fill" id="rail"></div></div>
@@ -147,7 +152,7 @@ const CONSTRUCTS = [
       {t:"felt unable to explain what you and others are working toward", rev:true},
     ]},
   { key:"participatory", label:"Participatory efficacy", color:"var(--amber)",
-    desc:"Does my contribution matter to our shared result? (Formation vs. mobilization.)",
+    desc:"Does my contribution matter to our shared result?",
     items:[
       {t:"felt that what you do makes a real difference to what your group can achieve"},
       {t:"felt that your participation was basically interchangeable with anyone else's", rev:true},
@@ -197,7 +202,7 @@ function renderCover(){
   stage.innerHTML = `
     <div class="kicker">DPI Fund · Agency Research</div>
     <h1>Agency Instrument</h1>
-    <p class="lede">A short, validated-in-progress scale that measures how agentic people feel, and tells <b>formation</b> (organizing that grows leaders) apart from <b>mobilization</b> (turnout without formation).</p>
+    <p class="lede">A short, validation-in-progress scale that measures how agentic people feel, and tells <b>formation</b> (organizing that grows leaders) apart from <b>mobilization</b> (turnout without formation).</p>
     <div class="meta-chips">
       <span class="chip">12 core items</span>
       <span class="chip">~4 minutes</span>
@@ -210,7 +215,7 @@ function renderCover(){
         <span style="width:9px;height:9px;border-radius:50%;background:${c.color};flex:none;transform:translateY(1px)"></span>
         <div><span style="font-weight:600">${c.label}</span><div style="font-size:13px;color:var(--mute)">${c.desc}</div></div></div>`).join('')}
     </div>
-    <div class="note"><b>Mockup, not yet validated.</b> Items and scoring are a working draft for the DPI / Groundwork agency scale. Recall window, context framing, and the demographic block are live design decisions.</div>
+    <div class="note"><b>Mockup, validation in progress.</b> Items and scoring are a working draft for the DPI agency scale. Recall window, context framing, and the background questions are live design decisions.</div>
     <div class="nav"><span></span><button class="btn btn-primary" onclick="go(1)">Begin →</button></div>
   `;
 }
@@ -258,13 +263,18 @@ function answer(id,k){
 function renderContext(){
   stage.innerHTML = `
     <div class="sec-head">
-      <div class="sec-label">Context & identity</div>
+      <div class="sec-label">About you</div>
       <h2 class="sec-title">A little about you</h2>
-      <p class="sec-desc">These help us see how agency lands differently across experience. Everything here is optional and analyzed only in aggregate.</p>
+      <p class="sec-desc">Tell us who you are, then a little about your background. This helps us understand how agency shows up across different experiences.</p>
+    </div>
+
+    <div class="field" style="display:flex;gap:14px">
+      <div style="flex:1"><label>Your name</label><input type="text" placeholder="First and last" value="${state.demo.name||''}" oninput="state.demo.name=this.value"></div>
+      <div style="flex:1"><label>Your organization</label><input type="text" placeholder="Where you organize" value="${state.demo.org||''}" oninput="state.demo.org=this.value"></div>
     </div>
 
     <div class="field">
-      <label>Racial / ethnic identity <span class="opt-note">covariate</span></label>
+      <label>Racial / ethnic identity</label>
       <select onchange="state.demo.race=this.value">${optList(RACE, state.demo.race)}</select>
     </div>
     <div class="field">
@@ -277,17 +287,17 @@ function renderContext(){
     </div>
 
     <div class="field" style="margin-top:28px">
-      <label>${RECALL.replace('In','Over')}, how often have you taken part in political education or training? <span class="opt-note">Miriam · pol. ed.</span></label>
+      <label>${RECALL.replace('In','Over')}, how often have you taken part in political education or training?</label>
       <div class="pill-row">${ANCHORS.map((a,k)=>`<button class="pill ${state.demo.poled===k?'sel':''}" onclick="state.demo.poled=${k};renderContext()">${a}</button>`).join('')}</div>
     </div>
 
     <div class="field">
-      <label>Growing up, I believed my group could shape the world around it. <span class="opt-note">pre-conditioning</span></label>
+      <label>Growing up, I believed my group could shape the world around it.</label>
       <div class="pill-row">${["Strongly disagree","Disagree","Neutral","Agree","Strongly agree"].map((a,k)=>`<button class="pill ${state.demo.precond===k?'sel':''}" onclick="state.demo.precond=${k};renderContext()">${a}</button>`).join('')}</div>
     </div>
 
     <div class="field" style="margin-top:28px">
-      <label>${RECALL}, which have you felt about your civic or political life? <span class="opt-note">affect block</span></label>
+      <label>${RECALL}, which have you felt about your civic or political life?</label>
       <div class="pill-row">${EMOTIONS.map(e=>`<button class="pill ${state.emotions[e]?'sel':''}" onclick="state.emotions['${e}']=!state.emotions['${e}'];renderContext()">${e}</button>`).join('')}</div>
     </div>
 
@@ -305,22 +315,38 @@ function subscale(c){
   return Math.round((mean/4)*100); // 0..100
 }
 
+const GROUPS = [
+  { name:"Individual agency", keys:["personal","articulation"],
+    sub:"How much you feel like the author of your own action, and able to name what you want." },
+  { name:"Collective agency", keys:["participatory","collective"],
+    sub:"How much you feel your part matters, and that your community can build power together." },
+];
+
 function renderResults(){
-  const scores = CONSTRUCTS.map(c=>({c, s:subscale(c)}));
-  const overall = Math.round(scores.reduce((a,x)=>a+x.s,0)/scores.length);
-  stage.innerHTML = `
-    <div class="sec-label">Result · mockup</div>
-    <h2 class="sec-title" style="margin-bottom:4px">Your agency profile</h2>
-    <p class="sec-desc">A pattern, not a grade. The shape across dimensions is the point.</p>
-    <div class="score-overall"><span class="score-big">${overall}</span><span class="unit">composite / 100</span></div>
-    ${scores.map(({c,s})=>`
+  const byKey = {}; CONSTRUCTS.forEach(c=>byKey[c.key]=subscale(c));
+  const overall = Math.round(Object.values(byKey).reduce((a,b)=>a+b,0)/4);
+  const dimByKey = {}; CONSTRUCTS.forEach(c=>dimByKey[c.key]=c);
+  const bar = (c)=>`
       <div class="bar-row">
-        <div class="bar-top"><span class="bar-name">${c.label}</span><span class="bar-val">${s}</span></div>
-        <div class="bar"><div class="bar-fill" style="background:${c.color}" data-w="${s}"></div></div>
+        <div class="bar-top"><span class="bar-name">${c.label}</span><span class="bar-val">${byKey[c.key]}</span></div>
+        <div class="bar"><div class="bar-fill" style="background:${c.color}" data-w="${byKey[c.key]}"></div></div>
         <div class="bar-desc">${c.desc}</div>
-      </div>`).join('')}
-    <div class="note" style="margin-top:30px"><b>What the shape would tell us.</b> A mobilization-only respondent tends to score high on personal agency and flat on participatory efficacy (the "interchangeable" item). A formed leader scores high across the board and low on interchangeability. That asymmetry is the signal the scale is built to catch.</div>
-    <div class="nav"><button class="btn btn-ghost" onclick="restart()">↺ Start over</button><span class="stepcount">Not a validated score · demo only</span></div>
+      </div>`;
+  stage.innerHTML = `
+    <div class="sec-label">Your results</div>
+    <h2 class="sec-title" style="margin-bottom:4px">Your agency profile</h2>
+    <p class="sec-desc">A picture of how you see your own capacity, and your shared capacity with others.</p>
+    <div class="score-overall"><span class="score-big">${overall}</span><span class="unit">overall / 100</span></div>
+    ${GROUPS.map(g=>{
+      const gs = Math.round(g.keys.reduce((a,k)=>a+byKey[k],0)/g.keys.length);
+      return `<div class="group">
+        <div class="group-head"><span class="group-name">${g.name}</span><span class="group-score">${gs} / 100</span></div>
+        <p class="group-sub">${g.sub}</p>
+        ${g.keys.map(k=>bar(dimByKey[k])).join('')}
+      </div>`;
+    }).join('')}
+    <div class="note" style="margin-top:30px"><b>Reading your profile.</b> These dimensions usually move at different speeds. Personal agency reflects whether you feel like the author of your own action, and it tends to stay fairly steady. The others tend to grow as you take on more shared work with others, like naming what your group wants and seeing that your own part matters to the result. Taller collective bars often reflect time spent organizing alongside other people.</div>
+    <div class="nav"><button class="btn btn-ghost" onclick="restart()">↺ Start over</button><span class="stepcount">Demo only · validation in progress</span></div>
   `;
   requestAnimationFrame(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w+"%"));
 }
