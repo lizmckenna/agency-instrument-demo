@@ -125,18 +125,19 @@
   .check-sub{font-size:12px;color:var(--mute);font-weight:400;line-height:1.35;}
 
   /* emotion intensity list */
-  .emo-legend{display:flex;justify-content:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:12px;
-    font-family:var(--mono);font-size:10.5px;letter-spacing:0.02em;color:var(--mute);}
-  .emo-grid{display:flex;flex-direction:column;gap:6px;}
-  .erow{display:flex;align-items:center;gap:14px;padding:9px 14px;border:1px solid var(--rule);
-    border-radius:10px;transition:border-color .12s;}
+  .emo-grid{display:flex;flex-direction:column;gap:8px;}
+  .erow{display:flex;align-items:center;gap:18px;padding:12px 16px;border:1px solid var(--rule);
+    border-radius:11px;transition:border-color .12s;}
   .erow.answered{border-color:var(--cobalt-soft);}
-  .erow-name{flex:1;font-family:var(--sans);font-size:14.5px;color:var(--ink);}
-  .escale{display:flex;gap:6px;}
-  .eopt{width:38px;height:38px;border:1px solid var(--rule);background:var(--paper);border-radius:8px;
-    font-family:var(--mono);font-size:13px;color:var(--mute);cursor:pointer;transition:all .12s;}
-  .eopt:hover{border-color:var(--cobalt-soft);color:var(--ink);}
-  .eopt.sel{background:var(--cobalt);border-color:var(--cobalt);color:#fff;font-weight:600;}
+  .erow-name{width:96px;flex:none;font-family:var(--sans);font-size:14.5px;color:var(--ink);}
+  .erow-track{flex:1;display:flex;flex-direction:column;gap:5px;}
+  .erow-track input[type=range]{width:100%;accent-color:var(--cobalt);height:4px;cursor:pointer;}
+  .erow-ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:0.02em;color:var(--mute);}
+  .erow-read{width:104px;flex:none;display:flex;align-items:baseline;gap:7px;justify-content:flex-end;}
+  .erow-num{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--mute);min-width:24px;text-align:right;}
+  .erow.answered .erow-num{color:var(--cobalt);}
+  .erow-deg{font-family:var(--sans);font-size:12px;color:var(--mute);width:62px;text-align:left;}
   .emo-list{display:flex;flex-direction:column;gap:8px;}
   .emo{border:1px solid var(--rule);border-radius:10px;overflow:hidden;transition:border-color .12s;}
   .emo.sel{border-color:var(--cobalt-soft);}
@@ -421,16 +422,16 @@ function renderEmotions(){
       <h2 class="sec-title">Your feelings</h2>
       <p class="sec-desc">${RECALL}, when you think about your civic or political life, how strongly have you felt each of these? Leave any at 0 if you haven't felt it.</p>
     </div>
-    <div class="emo-legend">
-      <span>0 Not at all</span><span>1 A little</span><span>2 Moderately</span><span>3 Quite a bit</span><span>4 Extremely</span>
-    </div>
     <div class="emo-grid">${EMOTIONS.map(e=>{
-      const v = state.emotions[e];
-      return `<div class="erow ${v?'answered':''}">
+      const v = state.emotions[e] ?? 0;
+      return `<div class="erow ${v>0?'answered':''}" data-emo="${e}">
         <div class="erow-name">${e}</div>
-        <div class="escale">
-          ${[0,1,2,3,4].map(k=>`<button class="eopt ${v===k?'sel':''}" title="${degLabel(k)}" onclick="setEmotion('${e}',${k})">${k}</button>`).join('')}
+        <div class="erow-track">
+          <input type="range" min="0" max="100" step="1" value="${v}"
+            oninput="onEmotion('${e}',this)">
+          <div class="erow-ticks"><span>Not at all</span><span>Moderately</span><span>Extremely</span></div>
         </div>
+        <div class="erow-read"><span class="erow-num">${v}</span><span class="erow-deg">${degLabel(v)}</span></div>
       </div>`;
     }).join('')}</div>
     <div class="nav">
@@ -523,13 +524,21 @@ function toggleInvolve(k){
   else { if(state.demo.involve[k]) delete state.demo.involve[k]; else state.demo.involve[k]=true; delete state.demo.involve[none]; }
   renderExperience();
 }
-function setEmotion(e,k){
-  state.emotions[e]=k;
-  renderEmotions();
+function onEmotion(e,el){
+  const v = +el.value;
+  state.emotions[e] = v;
+  const row = el.closest('.erow');
+  row.classList.toggle('answered', v>0);
+  row.querySelector('.erow-num').textContent = v;
+  row.querySelector('.erow-deg').textContent = degLabel(v);
 }
-// PANAS intensity anchors (Watson, Clark & Tellegen 1988)
+// PANAS intensity anchors (Watson, Clark & Tellegen 1988), mapped onto a 0-100 thermometer
 function degLabel(v){
-  return ["Not at all","A little","Moderately","Quite a bit","Extremely"][v];
+  if(v===0) return "Not at all";
+  if(v<=25) return "A little";
+  if(v<=50) return "Moderately";
+  if(v<=75) return "Quite a bit";
+  return "Extremely";
 }
 
 function go(n){ step=n; render(); }
