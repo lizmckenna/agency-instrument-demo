@@ -267,6 +267,31 @@ const state = { answers:{}, demo:{}, emotions:{}, human:{} };
 let step = 0; // 0 cover, 1..4 constructs, 5 experience, 6 engagement, 7 emotions, 8 about, 9 results
 const TOTAL = 9;
 
+/* ---------- data store (Supabase, insert-only) ---------- */
+const SUPABASE_URL = "https://zyillixouoxuugmaawza.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5aWxsaXhvdW94dXVnbWFhd3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNzEwMzcsImV4cCI6MjA5NTc0NzAzN30.KR0DKnEyia6cmQAUaQx_kkRNLbc-j25QMUaRj9FqF7w";
+let saved = false; // guard against double-submit
+async function saveResponse(scores){
+  if(saved) return; saved = true;
+  const d = state.demo;
+  const row = {
+    answers: state.answers,
+    emotions: state.emotions,
+    human: state.human,
+    experience: { involve: d.involve||{}, poled: d.poled, precond: d.precond },
+    about: { name: d.name||null, org: d.org||null, race: d.race||null, gender: d.gender||null, yob: d.yob||null, edu: d.edu||null },
+    scores: scores
+  };
+  try{
+    const r = await fetch(SUPABASE_URL+"/rest/v1/responses", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "apikey":SUPABASE_ANON, "Authorization":"Bearer "+SUPABASE_ANON, "Prefer":"return=minimal" },
+      body: JSON.stringify([row])
+    });
+    if(!r.ok){ saved=false; console.warn("save failed", r.status, await r.text()); }
+  }catch(e){ saved=false; console.warn("save error", e); }
+}
+
 const stage = document.getElementById('stage');
 const rail = document.getElementById('rail');
 
@@ -515,6 +540,7 @@ function renderResults(){
     <div class="nav"><button class="btn btn-ghost" onclick="restart()">↺ Start over</button><span class="stepcount">Demo only · validation in progress</span></div>
   `;
   requestAnimationFrame(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w+"%"));
+  saveResponse({ overall, byKey });
 }
 
 function toggleInvolve(k){
@@ -542,7 +568,7 @@ function degLabel(v){
 }
 
 function go(n){ step=n; render(); }
-function restart(){ state.answers={}; state.demo={}; state.emotions={}; state.human={}; step=0; render(); }
+function restart(){ state.answers={}; state.demo={}; state.emotions={}; state.human={}; saved=false; step=0; render(); }
 
 render();
 </script>
