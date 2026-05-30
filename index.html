@@ -54,6 +54,24 @@
     border-radius:8px;padding:14px 16px;font-size:13.5px;color:var(--mute);margin:24px 0;}
   .note b{color:var(--ink-2);font-weight:600;}
 
+  /* consent disclosure */
+  .consent{border:1px solid var(--rule);border-radius:10px;background:var(--paper);margin:8px 0 20px;overflow:hidden;}
+  .consent summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+    gap:12px;padding:15px 18px;font-size:14.5px;font-weight:600;color:var(--ink);user-select:none;}
+  .consent summary::-webkit-details-marker{display:none;}
+  .consent summary:hover{background:var(--cream-2);}
+  .consent-cue{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--cobalt);font-weight:500;display:flex;align-items:center;gap:6px;}
+  .consent-cue::after{content:"+";font-size:14px;line-height:1;}
+  .consent[open] .consent-cue::after{content:"–";}
+  .consent[open] summary{border-bottom:1px solid var(--rule-soft);}
+  .consent-body{padding:6px 18px 18px;font-size:13px;line-height:1.55;color:var(--mute);}
+  .consent-body p{margin:12px 0 0;}
+  .consent-body b{color:var(--ink-2);font-weight:600;}
+  .consent-body a{color:var(--cobalt);}
+  .consent-check{display:flex;gap:11px;align-items:flex-start;font-size:14px;color:var(--ink-2);
+    line-height:1.45;margin:4px 0 2px;cursor:pointer;}
+  .consent-check input{margin:2px 0 0;flex:none;width:16px;height:16px;accent-color:var(--cobalt);cursor:pointer;}
+
   /* section head */
   .sec-head{margin-bottom:26px;}
   .sec-label{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--cobalt);margin-bottom:10px;}
@@ -214,21 +232,29 @@ function renderCover(){
   stage.innerHTML = `
     <div class="kicker">DPI Fund · Civic Power Lab · Agency Research</div>
     <h1>Agency Instrument</h1>
-    <p class="lede">A short, validation-in-progress scale that measures how agentic people feel, and is designed to tell <b>formation</b> (organizing that grows leaders) apart from <b>mobilization</b> (turnout without formation).</p>
+    <p class="lede">A short research survey about how people experience power and agency in their organizing. Your answers help us understand how leaders and communities build the capacity to act together.</p>
     <div class="meta-chips">
-      <span class="chip">12 core items</span>
-      <span class="chip">~4 minutes</span>
-      <span class="chip">4 dimensions</span>
-      <span class="chip">0–4 frequency scale</span>
+      <span class="chip">About 15 minutes</span>
+      <span class="chip">Voluntary</span>
+      <span class="chip">IRB-approved</span>
     </div>
-    <p class="sec-desc">Four dimensions, three items each:</p>
-    <div style="margin:14px 0 4px">
-      ${CONSTRUCTS.map(c=>`<div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--rule-soft)">
-        <span style="width:9px;height:9px;border-radius:50%;background:${c.color};flex:none;transform:translateY(1px)"></span>
-        <div><span style="font-weight:600">${c.label}</span><div style="font-size:13px;color:var(--mute)">${c.desc}</div></div></div>`).join('')}
-    </div>
-    <div class="note"><b>Mockup, validation in progress.</b> Items and scoring are a working draft for the DPI agency scale. Recall window, context framing, and the background questions are live design decisions.</div>
-    <div class="nav"><span></span><button class="btn btn-primary" onclick="go(1)">Begin →</button></div>
+    <p class="sec-desc" style="margin-bottom:18px">You are invited to take part because you are a member of a community organization. Taking part is completely up to you, and you can skip any question or stop at any time.</p>
+
+    <details class="consent">
+      <summary>Consent to participate in research <span class="consent-cue">Read full statement</span></summary>
+      <div class="consent-body">
+        <p><b>Voluntary participation.</b> Whether or not you take part is up to you. You can agree now and change your mind later. Refusing or stopping will not be held against you and costs you no benefit you are otherwise entitled to.</p>
+        <p><b>What this involves.</b> We are studying how power and agency develop in organizational settings. The survey takes about 15 minutes and asks about your experiences and outlook.</p>
+        <p><b>Risks and benefits.</b> We believe the risks are minimal. There is no direct benefit to you. Your responses may help scholars better understand the civic power landscape in the United States.</p>
+        <p><b>Privacy.</b> We limit use and disclosure of your information to people who need to review it, but cannot promise complete confidentiality. The Institutional Review Board and other authorized representatives may inspect and copy your information. Once identifiers are removed, de-identified data may be used or shared for future research without your additional consent.</p>
+        <p><b>Questions.</b> Contact the principal investigator, Elizabeth McKenna, Harvard University (<a href="mailto:emckenna@hks.harvard.edu">emckenna@hks.harvard.edu</a>). For questions about your rights as a research participant, or if you cannot reach the research team, contact the Harvard University Area IRB at (617) 496-2847 or <a href="mailto:cuhs@harvard.edu">cuhs@harvard.edu</a>.</p>
+        <p>This research has been reviewed and approved by the Harvard University Area Institutional Review Board.</p>
+      </div>
+    </details>
+
+    <label class="consent-check"><input type="checkbox" id="consentBox" onchange="document.getElementById('beginBtn').disabled=!this.checked"> I have read the information above and agree to take part in this research.</label>
+
+    <div class="nav"><span></span><button class="btn btn-primary" id="beginBtn" disabled onclick="go(1)">Begin →</button></div>
   `;
 }
 
