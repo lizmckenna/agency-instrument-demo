@@ -133,9 +133,12 @@
   .emo.sel .emo-name{font-weight:600;color:var(--cobalt);}
   .emo-name .emo-tog{font-family:var(--mono);font-size:14px;color:var(--mute);}
   .emo.sel .emo-name .emo-tog{color:var(--cobalt);}
-  .emo-slider{display:flex;align-items:center;gap:14px;padding:2px 15px 14px;}
-  .emo-slider input[type=range]{flex:1;accent-color:var(--cobalt);height:4px;}
-  .emo-deg{font-family:var(--mono);font-size:10.5px;letter-spacing:0.03em;color:var(--mute);min-width:80px;text-align:right;}
+  .emo-slider{display:flex;flex-direction:column;gap:7px;padding:2px 15px 14px;}
+  .emo-slider input[type=range]{width:100%;accent-color:var(--cobalt);height:4px;}
+  .emo-readout{display:flex;align-items:baseline;gap:8px;}
+  .emo-num{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--cobalt);}
+  .emo-deg{font-family:var(--sans);font-size:13px;color:var(--ink);}
+  .emo-axis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:0.02em;color:var(--mute);}
 
   /* nav */
   .nav{display:flex;align-items:center;justify-content:space-between;margin-top:34px;}
@@ -230,7 +233,7 @@ const CONSTRUCTS = [
 const RACE = ["American Indian / Alaska Native","Asian","Black, African American","Black, African","Hispanic / Latino","Middle Eastern","Native Hawaiian / Pacific Islander","White","Something else","Prefer not to say"];
 const GENDER = ["Woman","Man","Nonbinary","Something else","Prefer not to say"];
 const EDU = ["Less than high school","High school","Some college","2-year degree","4-year degree","Professional degree","Doctorate","Other"];
-const EMOTIONS = ["Hope","Fear","Anger","Pride","Courage","Isolation","Frustration","Determination","Belonging","Hopelessness","Anxiety","Solidarity","Joy","Burnout","Dignity","Shame","Weariness"];
+const EMOTIONS = ["Hope","Fear","Anger","Courage","Isolation","Resolve","Belonging","Solidarity","Joy","Burnout","Dignity","Shame"];
 const INVOLVE = [
   {t:"By going to a protest or action once or twice"},
   {t:"By protesting or taking action regularly"},
@@ -410,7 +413,11 @@ function renderEmotions(){
       const v = state.emotions[e]; const sel = v!==undefined;
       return `<div class="emo ${sel?'sel':''}">
         <button class="emo-name" onclick="toggleEmotion('${e}')">${e}<span class="emo-tog">${sel?'✓':'+'}</span></button>
-        ${sel?`<div class="emo-slider"><input type="range" min="1" max="100" value="${v}" oninput="state.emotions['${e}']=+this.value;this.parentNode.querySelector('.emo-deg').textContent=degLabel(+this.value)"><span class="emo-deg">${degLabel(v)}</span></div>`:''}
+        ${sel?`<div class="emo-slider">
+          <div class="emo-readout"><span class="emo-num">${v}</span><span class="emo-deg">${degLabel(v)}</span></div>
+          <input type="range" min="0" max="4" step="1" value="${v}" oninput="state.emotions['${e}']=+this.value;const r=this.parentNode.querySelector('.emo-readout');r.querySelector('.emo-num').textContent=this.value;r.querySelector('.emo-deg').textContent=degLabel(+this.value)">
+          <div class="emo-axis"><span>0 · Not at all</span><span>2 · Moderately</span><span>4 · Extremely</span></div>
+        </div>`:''}
       </div>`;
     }).join('')}</div>
     <div class="nav">
@@ -505,15 +512,12 @@ function toggleInvolve(k){
 }
 function toggleEmotion(e){
   if(state.emotions[e]!==undefined) delete state.emotions[e];
-  else state.emotions[e]=50; // default to a moderate degree when first selected
+  else state.emotions[e]=2; // default to a moderate degree when first selected
   renderEmotions();
 }
 // PANAS intensity anchors (Watson, Clark & Tellegen 1988)
 function degLabel(v){
-  if(v<=20) return "A little";
-  if(v<=45) return "Moderately";
-  if(v<=70) return "Quite a bit";
-  return "Extremely";
+  return ["Not at all","A little","Moderately","Quite a bit","Extremely"][v];
 }
 
 function go(n){ step=n; render(); }
