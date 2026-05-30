@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agency Instrument · Civic Power Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ffffff; --paper-tint:#fafafa; --cream-2:#f4f4f5;
+    --rule:#e4e4e7; --rule-soft:#f0f0f3;
+    --ink:#18181b; --ink-2:#27272a; --mute:#71717a;
+    --cobalt:#5c7dfa; --cobalt-deep:#3e4f6e; --cobalt-soft:#c5d0fc;
+    --terracotta:#b7432b; --olive:#5b7a3a; --amber:#c99633; --teal:#0e8a78;
+    --signal-green:#22c55e; --signal-yellow:#eab308;
+    --display:"Archivo Narrow",-apple-system,system-ui,sans-serif;
+    --sans:"DM Sans",-apple-system,system-ui,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{font-family:var(--sans);font-size:15px;line-height:1.55;color:var(--ink);background:var(--paper-tint);-webkit-font-smoothing:antialiased;}
+
+  /* topbar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px;border-bottom:1px solid var(--rule);background:var(--paper);
+    position:sticky;top:0;z-index:20;}
+  .wordmark{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:-0.01em;color:var(--ink);}
+  .wordmark .dot{color:var(--cobalt);margin:0 5px;}
+  .badge-crm{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;
+    background:var(--teal);color:#fff;padding:3px 6px;border-radius:3px;margin-left:8px;vertical-align:middle;}
+  .badge-dev{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;
+    background:rgba(92,125,250,0.1);color:var(--cobalt);border:1px solid var(--cobalt-soft);
+    padding:3px 9px;border-radius:999px;}
+  .badge-dev::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cobalt);}
+
+  /* progress rail */
+  .rail{height:3px;background:var(--rule-soft);position:sticky;top:57px;z-index:19;}
+  .rail-fill{height:100%;background:var(--cobalt);width:0;transition:width .35s cubic-bezier(.4,0,.2,1);}
+
+  /* layout */
+  .stage{max-width:680px;margin:0 auto;padding:48px 24px 120px;}
+  .kicker{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--mute);margin-bottom:14px;}
+  h1{font-family:var(--display);font-weight:700;letter-spacing:-0.01em;font-size:38px;line-height:1.08;margin:0 0 18px;}
+  .lede{font-size:16px;color:var(--ink-2);margin:0 0 16px;}
+  .meta-chips{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 32px;}
+  .chip{font-family:var(--mono);font-size:11px;letter-spacing:0.04em;color:var(--ink-2);
+    background:var(--cream-2);border:1px solid var(--rule);padding:6px 11px;border-radius:6px;}
+  .note{background:var(--paper);border:1px solid var(--rule);border-left:3px solid var(--cobalt);
+    border-radius:8px;padding:14px 16px;font-size:13.5px;color:var(--mute);margin:24px 0;}
+  .note b{color:var(--ink-2);font-weight:600;}
+
+  /* section head */
+  .sec-head{margin-bottom:26px;}
+  .sec-label{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--cobalt);margin-bottom:10px;}
+  .sec-title{font-family:var(--display);font-weight:700;font-size:27px;letter-spacing:-0.01em;margin:0 0 8px;}
+  .sec-desc{color:var(--mute);font-size:14.5px;margin:0;}
+  .recall{font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:14px;}
+  .recall b{color:var(--ink-2);}
+
+  /* items */
+  .item{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:22px 22px 18px;margin-bottom:14px;
+    transition:border-color .15s, box-shadow .15s;}
+  .item.answered{border-color:var(--cobalt-soft);}
+  .item-q{font-size:15.5px;font-weight:500;color:var(--ink);margin-bottom:16px;display:flex;gap:10px;}
+  .item-n{font-family:var(--mono);font-size:12px;color:var(--mute);flex:none;padding-top:2px;}
+  .scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+  .opt{appearance:none;border:1px solid var(--rule);background:var(--paper-tint);border-radius:8px;
+    padding:12px 6px 10px;cursor:pointer;text-align:center;font-family:var(--sans);transition:all .12s;}
+  .opt:hover{border-color:var(--cobalt-soft);background:#fff;}
+  .opt .num{display:block;font-family:var(--mono);font-size:13px;color:var(--mute);margin-bottom:5px;}
+  .opt .lab{display:block;font-size:11.5px;line-height:1.25;color:var(--ink-2);}
+  .opt.sel{background:var(--cobalt);border-color:var(--cobalt);}
+  .opt.sel .num,.opt.sel .lab{color:#fff;}
+
+  /* demographics / adjunct fields */
+  .field{margin-bottom:20px;}
+  .field label{display:block;font-size:14px;font-weight:500;margin-bottom:8px;}
+  .field .opt-note{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--mute);
+    border:1px solid var(--rule);border-radius:3px;padding:1px 5px;margin-left:8px;vertical-align:middle;}
+  select,input[type=text],input[type=number]{width:100%;font-family:var(--sans);font-size:14px;color:var(--ink);
+    border:1px solid var(--rule);border-radius:8px;padding:11px 12px;background:var(--paper);}
+  select:focus,input:focus{outline:none;border-color:var(--cobalt);}
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .pill{border:1px solid var(--rule);background:var(--paper);border-radius:999px;padding:8px 14px;font-size:13px;cursor:pointer;transition:all .12s;}
+  .pill:hover{border-color:var(--cobalt-soft);}
+  .pill.sel{background:var(--cobalt);border-color:var(--cobalt);color:#fff;}
+
+  /* nav */
+  .nav{display:flex;align-items:center;justify-content:space-between;margin-top:34px;}
+  .btn{font-family:var(--sans);font-size:14px;font-weight:600;border-radius:9px;padding:12px 22px;cursor:pointer;border:1px solid var(--rule);background:var(--paper);color:var(--ink);transition:all .14s;}
+  .btn:hover{border-color:var(--ink-2);}
+  .btn-primary{background:var(--cobalt);border-color:var(--cobalt);color:#fff;}
+  .btn-primary:hover{background:#4a6bf0;border-color:#4a6bf0;}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;background:var(--cobalt);}
+  .btn-ghost{background:transparent;border-color:transparent;color:var(--mute);}
+  .btn-ghost:hover{color:var(--ink);border-color:transparent;}
+  .stepcount{font-family:var(--mono);font-size:11px;color:var(--mute);}
+
+  /* results */
+  .score-overall{display:flex;align-items:baseline;gap:14px;margin:6px 0 30px;}
+  .score-big{font-family:var(--display);font-weight:700;font-size:64px;line-height:1;color:var(--cobalt);}
+  .score-overall .unit{font-family:var(--mono);font-size:12px;color:var(--mute);}
+  .bar-row{margin-bottom:20px;}
+  .bar-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+  .bar-name{font-size:14px;font-weight:600;}
+  .bar-val{font-family:var(--mono);font-size:13px;color:var(--ink-2);}
+  .bar{height:9px;background:var(--rule-soft);border-radius:999px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:999px;width:0;transition:width .7s cubic-bezier(.4,0,.2,1);}
+  .bar-desc{font-size:12.5px;color:var(--mute);margin-top:6px;}
+  .hidden{display:none;}
+  .center{text-align:center;}
+  @media(max-width:560px){
+    h1{font-size:30px;} .scale{gap:5px;} .opt{padding:10px 3px 8px;} .opt .lab{font-size:10px;}
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="wordmark">Civic Power<span class="dot">·</span>Lab<span class="badge-crm">Groundwork</span></div>
+    <div class="badge-dev">Dev preview</div>
+  </div>
+  <div class="rail"><div class="rail-fill" id="rail"></div></div>
+
+  <div class="stage" id="stage"></div>
+
+<script>
+/* ---------- instrument config ---------- */
+const RECALL = "In the last month"; // open design Q: Liz=1mo (PSS); Miriam=8mo/1yr (PICO purple-line)
+const ANCHORS = ["Never","Almost never","Sometimes","Fairly often","Very often"]; // PSS 0-4
+
+const CONSTRUCTS = [
+  { key:"personal", label:"Personal agency", color:"var(--cobalt)",
+    desc:"Am I the author of my own action? The individual baseline.",
+    items:[
+      {t:"felt able to act on what matters to you"},
+      {t:"felt stuck, even when you wanted to act", rev:true},
+      {t:"felt confident you could figure out how to do something about a problem in front of you"},
+    ]},
+  { key:"articulation", label:"Articulation", color:"var(--olive)",
+    desc:"Can I name what I and others want, and why?",
+    items:[
+      {t:"felt able to put into words what you want to change"},
+      {t:"felt clear about why something matters to you"},
+      {t:"felt unable to explain what you and others are working toward", rev:true},
+    ]},
+  { key:"participatory", label:"Participatory efficacy", color:"var(--amber)",
+    desc:"Does my contribution matter to our shared result? (Formation vs. mobilization.)",
+    items:[
+      {t:"felt that what you do makes a real difference to what your group can achieve"},
+      {t:"felt that your participation was basically interchangeable with anyone else's", rev:true},
+      {t:"felt capable of bringing others in and helping them grow as leaders"},
+    ]},
+  { key:"collective", label:"Collective efficacy with horizon", color:"var(--teal)",
+    desc:"Can we, working together, build toward something real?",
+    items:[
+      {t:"felt that when people like you act together, you have power to influence decisions made by institutions and leaders"},
+      {t:"felt that the group or community you're part of is building toward something real"},
+      {t:"felt that no matter how organized people get, things won't really change", rev:true},
+    ]},
+];
+
+/* adjunct + context block (Miriam's adds: intersectional, political education, pre-conditioning) */
+const RACE = ["American Indian / Alaska Native","Asian","Black, African American","Black, African","Hispanic / Latino","Middle Eastern","Native Hawaiian / Pacific Islander","White","Something else","Prefer not to say"];
+const GENDER = ["Woman","Man","Nonbinary","Something else","Prefer not to say"];
+const EDU = ["Less than high school","High school","Some college","2-year degree","4-year degree","Professional degree","Doctorate","Other"];
+const EMOTIONS = ["Fear","Hope","Anger","Pride","Courage","Isolation"];
+
+/* ---------- state ---------- */
+const state = { answers:{}, demo:{}, emotions:{} };
+let step = 0; // 0 cover, 1..4 constructs, 5 context, 6 results
+const TOTAL = 6;
+
+const stage = document.getElementById('stage');
+const rail = document.getElementById('rail');
+
+function setRail(){
+  const pct = step===0 ? 0 : Math.round((step/TOTAL)*100);
+  rail.style.width = pct + "%";
+}
+
+function coreCount(){ return CONSTRUCTS.reduce((n,c)=>n+c.items.length,0); }
+function answeredCount(){ return Object.keys(state.answers).length; }
+
+function render(){
+  setRail();
+  window.scrollTo({top:0,behavior:'instant'});
+  if(step===0) return renderCover();
+  if(step>=1 && step<=4) return renderConstruct(step-1);
+  if(step===5) return renderContext();
+  if(step===6) return renderResults();
+}
+
+function renderCover(){
+  stage.innerHTML = `
+    <div class="kicker">DPI Fund · Agency Research</div>
+    <h1>Agency Instrument</h1>
+    <p class="lede">A short, validated-in-progress scale that measures how agentic people feel, and tells <b>formation</b> (organizing that grows leaders) apart from <b>mobilization</b> (turnout without formation).</p>
+    <div class="meta-chips">
+      <span class="chip">12 core items</span>
+      <span class="chip">~4 minutes</span>
+      <span class="chip">4 dimensions</span>
+      <span class="chip">0–4 frequency scale</span>
+    </div>
+    <p class="sec-desc">Four dimensions, three items each:</p>
+    <div style="margin:14px 0 4px">
+      ${CONSTRUCTS.map(c=>`<div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--rule-soft)">
+        <span style="width:9px;height:9px;border-radius:50%;background:${c.color};flex:none;transform:translateY(1px)"></span>
+        <div><span style="font-weight:600">${c.label}</span><div style="font-size:13px;color:var(--mute)">${c.desc}</div></div></div>`).join('')}
+    </div>
+    <div class="note"><b>Mockup, not yet validated.</b> Items and scoring are a working draft for the DPI / Groundwork agency scale. Recall window, context framing, and the demographic block are live design decisions.</div>
+    <div class="nav"><span></span><button class="btn btn-primary" onclick="go(1)">Begin →</button></div>
+  `;
+}
+
+function renderConstruct(i){
+  const c = CONSTRUCTS[i];
+  const startN = CONSTRUCTS.slice(0,i).reduce((n,x)=>n+x.items.length,0);
+  stage.innerHTML = `
+    <div class="sec-head">
+      <div class="sec-label">Dimension ${i+1} of 4</div>
+      <h2 class="sec-title">${c.label}</h2>
+      <p class="sec-desc">${c.desc}</p>
+      <div class="recall"><b>${RECALL}</b>, how often have you…</div>
+    </div>
+    ${c.items.map((it,j)=>{
+      const id = c.key+"_"+j;
+      const cur = state.answers[id];
+      return `<div class="item ${cur!==undefined?'answered':''}" id="card_${id}">
+        <div class="item-q"><span class="item-n">${String(startN+j+1).padStart(2,'0')}</span><span>…${it.t}?</span></div>
+        <div class="scale">
+          ${ANCHORS.map((a,k)=>`<button class="opt ${cur===k?'sel':''}" onclick="answer('${id}',${k})">
+            <span class="num">${k}</span><span class="lab">${a}</span></button>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="go(${step-1})">← Back</button>
+      <span class="stepcount">${answeredCount()} / ${coreCount()} answered</span>
+      <button class="btn btn-primary" id="nextBtn" ${constructComplete(i)?'':'disabled'} onclick="go(${step+1})">Continue →</button>
+    </div>
+  `;
+}
+
+function constructComplete(i){
+  const c = CONSTRUCTS[i];
+  return c.items.every((it,j)=> state.answers[c.key+"_"+j]!==undefined);
+}
+
+function answer(id,k){
+  state.answers[id]=k;
+  // light re-render of just this construct to update selection + next button
+  renderConstruct(step-1);
+}
+
+function renderContext(){
+  stage.innerHTML = `
+    <div class="sec-head">
+      <div class="sec-label">Context & identity</div>
+      <h2 class="sec-title">A little about you</h2>
+      <p class="sec-desc">These help us see how agency lands differently across experience. Everything here is optional and analyzed only in aggregate.</p>
+    </div>
+
+    <div class="field">
+      <label>Racial / ethnic identity <span class="opt-note">covariate</span></label>
+      <select onchange="state.demo.race=this.value">${optList(RACE, state.demo.race)}</select>
+    </div>
+    <div class="field">
+      <label>Gender</label>
+      <select onchange="state.demo.gender=this.value">${optList(GENDER, state.demo.gender)}</select>
+    </div>
+    <div class="field" style="display:flex;gap:14px">
+      <div style="flex:1"><label>Year of birth</label><input type="number" placeholder="e.g. 1985" value="${state.demo.yob||''}" oninput="state.demo.yob=this.value"></div>
+      <div style="flex:2"><label>Highest education</label><select onchange="state.demo.edu=this.value">${optList(EDU, state.demo.edu)}</select></div>
+    </div>
+
+    <div class="field" style="margin-top:28px">
+      <label>${RECALL.replace('In','Over')}, how often have you taken part in political education or training? <span class="opt-note">Miriam · pol. ed.</span></label>
+      <div class="pill-row">${ANCHORS.map((a,k)=>`<button class="pill ${state.demo.poled===k?'sel':''}" onclick="state.demo.poled=${k};renderContext()">${a}</button>`).join('')}</div>
+    </div>
+
+    <div class="field">
+      <label>Growing up, I believed my group could shape the world around it. <span class="opt-note">pre-conditioning</span></label>
+      <div class="pill-row">${["Strongly disagree","Disagree","Neutral","Agree","Strongly agree"].map((a,k)=>`<button class="pill ${state.demo.precond===k?'sel':''}" onclick="state.demo.precond=${k};renderContext()">${a}</button>`).join('')}</div>
+    </div>
+
+    <div class="field" style="margin-top:28px">
+      <label>${RECALL}, which have you felt about your civic or political life? <span class="opt-note">affect block</span></label>
+      <div class="pill-row">${EMOTIONS.map(e=>`<button class="pill ${state.emotions[e]?'sel':''}" onclick="state.emotions['${e}']=!state.emotions['${e}'];renderContext()">${e}</button>`).join('')}</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="go(4)">← Back</button>
+      <button class="btn btn-primary" onclick="go(6)">See results →</button>
+    </div>
+  `;
+}
+function optList(arr,sel){ return `<option value="" ${sel?'':'selected'} disabled>Select…</option>`+arr.map(o=>`<option ${o===sel?'selected':''}>${o}</option>`).join(''); }
+
+function subscale(c){
+  const vals = c.items.map((it,j)=>{ let v=state.answers[c.key+"_"+j]; return it.rev ? 4-v : v; });
+  const mean = vals.reduce((a,b)=>a+b,0)/vals.length; // 0..4
+  return Math.round((mean/4)*100); // 0..100
+}
+
+function renderResults(){
+  const scores = CONSTRUCTS.map(c=>({c, s:subscale(c)}));
+  const overall = Math.round(scores.reduce((a,x)=>a+x.s,0)/scores.length);
+  stage.innerHTML = `
+    <div class="sec-label">Result · mockup</div>
+    <h2 class="sec-title" style="margin-bottom:4px">Your agency profile</h2>
+    <p class="sec-desc">A pattern, not a grade. The shape across dimensions is the point.</p>
+    <div class="score-overall"><span class="score-big">${overall}</span><span class="unit">composite / 100</span></div>
+    ${scores.map(({c,s})=>`
+      <div class="bar-row">
+        <div class="bar-top"><span class="bar-name">${c.label}</span><span class="bar-val">${s}</span></div>
+        <div class="bar"><div class="bar-fill" style="background:${c.color}" data-w="${s}"></div></div>
+        <div class="bar-desc">${c.desc}</div>
+      </div>`).join('')}
+    <div class="note" style="margin-top:30px"><b>What the shape would tell us.</b> A mobilization-only respondent tends to score high on personal agency and flat on participatory efficacy (the "interchangeable" item). A formed leader scores high across the board and low on interchangeability. That asymmetry is the signal the scale is built to catch.</div>
+    <div class="nav"><button class="btn btn-ghost" onclick="restart()">↺ Start over</button><span class="stepcount">Not a validated score · demo only</span></div>
+  `;
+  requestAnimationFrame(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w+"%"));
+}
+
+function go(n){ step=n; render(); }
+function restart(){ state.answers={}; state.demo={}; state.emotions={}; step=0; render(); }
+
+render();
+</script>
+</body>
+</html>
