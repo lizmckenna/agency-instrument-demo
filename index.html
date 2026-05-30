@@ -121,6 +121,8 @@
   .check-opt.sel .check-box{background:var(--cobalt);border-color:var(--cobalt);}
   .check-box::after{content:"\2713";color:#fff;font-size:12px;font-weight:700;line-height:1;opacity:0;transition:opacity .12s;}
   .check-opt.sel .check-box::after{opacity:1;}
+  .check-text{display:flex;flex-direction:column;gap:3px;}
+  .check-sub{font-size:12px;color:var(--mute);font-weight:400;line-height:1.35;}
 
   /* emotion intensity list */
   .emo-list{display:flex;flex-direction:column;gap:8px;}
@@ -229,12 +231,25 @@ const RACE = ["American Indian / Alaska Native","Asian","Black, African American
 const GENDER = ["Woman","Man","Nonbinary","Something else","Prefer not to say"];
 const EDU = ["Less than high school","High school","Some college","2-year degree","4-year degree","Professional degree","Doctorate","Other"];
 const EMOTIONS = ["Hope","Fear","Anger","Pride","Courage","Isolation","Frustration","Determination","Belonging","Hopelessness","Anxiety","Solidarity","Joy","Burnout","Dignity","Shame","Weariness"];
-const INVOLVE = ["As an active member of an organization","By protesting or taking action regularly","By going to a protest or action once or twice","I haven't been involved"];
+const INVOLVE = [
+  {t:"By going to a protest or action once or twice"},
+  {t:"By protesting or taking action regularly"},
+  {t:"As an active member of an organization", sub:"You go to strategy meetings, serve on a team, or carry ongoing responsibilities"},
+  {t:"I haven't been involved"},
+];
+// how others have engaged you: humanizing vs dehumanizing (formation vs mobilization)
+const HUMAN = [
+  {t:"felt seen as a whole person, not just a vote or a number"},
+  {t:"felt that someone was genuinely curious about what you think"},
+  {t:"felt respected as someone with something to contribute"},
+  {t:"felt treated as a means to someone else's goal", rev:true},
+  {t:"felt like a name on a list", rev:true},
+];
 
 /* ---------- state ---------- */
-const state = { answers:{}, demo:{}, emotions:{} };
-let step = 0; // 0 cover, 1..4 constructs, 5 experience, 6 about you, 7 results
-const TOTAL = 7;
+const state = { answers:{}, demo:{}, emotions:{}, human:{} };
+let step = 0; // 0 cover, 1..4 constructs, 5 experience, 6 engagement, 7 emotions, 8 about, 9 results
+const TOTAL = 9;
 
 const stage = document.getElementById('stage');
 const rail = document.getElementById('rail');
@@ -253,8 +268,10 @@ function render(){
   if(step===0) return renderCover();
   if(step>=1 && step<=4) return renderConstruct(step-1);
   if(step===5) return renderExperience();
-  if(step===6) return renderAbout();
-  if(step===7) return renderResults();
+  if(step===6) return renderEngagement();
+  if(step===7) return renderEmotions();
+  if(step===8) return renderAbout();
+  if(step===9) return renderResults();
 }
 
 function renderCover(){
@@ -336,8 +353,8 @@ function renderExperience(){
     </div>
 
     <div class="field">
-      <label>${RECALL}, how have you taken part in civic or political life?</label>
-      <div class="check-list">${INVOLVE.map((a,k)=>`<div class="check-opt ${state.demo.involve&&state.demo.involve[k]?'sel':''}" onclick="toggleInvolve(${k})"><span class="check-box"></span><span>${a}</span></div>`).join('')}</div>
+      <label>${RECALL}, how have you taken part in civic or political life? <span class="opt-note">check all that apply</span></label>
+      <div class="check-list">${INVOLVE.map((a,k)=>`<div class="check-opt ${state.demo.involve&&state.demo.involve[k]?'sel':''}" onclick="toggleInvolve(${k})"><span class="check-box"></span><span class="check-text">${a.t}${a.sub?`<span class="check-sub">${a.sub}</span>`:''}</span></div>`).join('')}</div>
     </div>
 
     <div class="field" style="margin-top:28px">
@@ -350,20 +367,55 @@ function renderExperience(){
       <div class="pill-row">${["Strongly disagree","Disagree","Neutral","Agree","Strongly agree"].map((a,k)=>`<button class="pill ${state.demo.precond===k?'sel':''}" onclick="state.demo.precond=${k};renderExperience()">${a}</button>`).join('')}</div>
     </div>
 
-    <div class="field" style="margin-top:28px">
-      <label>${RECALL}, which have you felt about your civic or political life, and how strongly? <span class="opt-note">tap each one you felt</span></label>
-      <div class="emo-list">${EMOTIONS.map(e=>{
-        const v = state.emotions[e]; const sel = v!==undefined;
-        return `<div class="emo ${sel?'sel':''}">
-          <button class="emo-name" onclick="toggleEmotion('${e}')">${e}<span class="emo-tog">${sel?'✓':'+'}</span></button>
-          ${sel?`<div class="emo-slider"><input type="range" min="1" max="100" value="${v}" oninput="state.emotions['${e}']=+this.value;this.parentNode.querySelector('.emo-deg').textContent=degLabel(+this.value)"><span class="emo-deg">${degLabel(v)}</span></div>`:''}
-        </div>`;
-      }).join('')}</div>
-    </div>
-
     <div class="nav">
       <button class="btn btn-ghost" onclick="go(4)">← Back</button>
       <button class="btn btn-primary" onclick="go(6)">Continue →</button>
+    </div>
+  `;
+}
+
+function renderEngagement(){
+  stage.innerHTML = `
+    <div class="sec-head">
+      <div class="sec-label">How you've been engaged</div>
+      <h2 class="sec-title">Being brought in</h2>
+      <p class="sec-desc">How it has felt when other people have tried to involve you in civic or political life.</p>
+      <div class="recall"><b>${RECALL}</b>, when people tried to involve you, how often have you…</div>
+    </div>
+    ${HUMAN.map((it,j)=>{
+      const cur = state.human[j];
+      return `<div class="item ${cur!==undefined?'answered':''}">
+        <div class="item-q"><span class="item-n">${String(j+1).padStart(2,'0')}</span><span>…${it.t}?</span></div>
+        <div class="scale">
+          ${ANCHORS.map((a,k)=>`<button class="opt ${cur===k?'sel':''}" onclick="state.human[${j}]=${k};renderEngagement()">
+            <span class="num">${k}</span><span class="lab">${a}</span></button>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="go(5)">← Back</button>
+      <button class="btn btn-primary" onclick="go(7)">Continue →</button>
+    </div>
+  `;
+}
+
+function renderEmotions(){
+  stage.innerHTML = `
+    <div class="sec-head">
+      <div class="sec-label">How it has felt</div>
+      <h2 class="sec-title">Your feelings</h2>
+      <p class="sec-desc">${RECALL}, which of these have you felt about your civic or political life, and how strongly? Tap each one you felt.</p>
+    </div>
+    <div class="emo-list">${EMOTIONS.map(e=>{
+      const v = state.emotions[e]; const sel = v!==undefined;
+      return `<div class="emo ${sel?'sel':''}">
+        <button class="emo-name" onclick="toggleEmotion('${e}')">${e}<span class="emo-tog">${sel?'✓':'+'}</span></button>
+        ${sel?`<div class="emo-slider"><input type="range" min="1" max="100" value="${v}" oninput="state.emotions['${e}']=+this.value;this.parentNode.querySelector('.emo-deg').textContent=degLabel(+this.value)"><span class="emo-deg">${degLabel(v)}</span></div>`:''}
+      </div>`;
+    }).join('')}</div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="go(6)">← Back</button>
+      <button class="btn btn-primary" onclick="go(8)">Continue →</button>
     </div>
   `;
 }
@@ -395,8 +447,8 @@ function renderAbout(){
     </div>
 
     <div class="nav">
-      <button class="btn btn-ghost" onclick="go(5)">← Back</button>
-      <button class="btn btn-primary" onclick="go(7)">See results →</button>
+      <button class="btn btn-ghost" onclick="go(7)">← Back</button>
+      <button class="btn btn-primary" onclick="go(9)">See results →</button>
     </div>
   `;
 }
@@ -453,19 +505,19 @@ function toggleInvolve(k){
 }
 function toggleEmotion(e){
   if(state.emotions[e]!==undefined) delete state.emotions[e];
-  else state.emotions[e]=60; // default to a moderate degree when first selected
-  renderExperience();
+  else state.emotions[e]=50; // default to a moderate degree when first selected
+  renderEmotions();
 }
+// PANAS intensity anchors (Watson, Clark & Tellegen 1988)
 function degLabel(v){
   if(v<=20) return "A little";
-  if(v<=40) return "Somewhat";
-  if(v<=60) return "A fair amount";
-  if(v<=80) return "Quite a bit";
-  return "A lot";
+  if(v<=45) return "Moderately";
+  if(v<=70) return "Quite a bit";
+  return "Extremely";
 }
 
 function go(n){ step=n; render(); }
-function restart(){ state.answers={}; state.demo={}; state.emotions={}; step=0; render(); }
+function restart(){ state.answers={}; state.demo={}; state.emotions={}; state.human={}; step=0; render(); }
 
 render();
 </script>
