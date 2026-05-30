@@ -202,12 +202,12 @@ const CONSTRUCTS = [
 const RACE = ["American Indian / Alaska Native","Asian","Black, African American","Black, African","Hispanic / Latino","Middle Eastern","Native Hawaiian / Pacific Islander","White","Something else","Prefer not to say"];
 const GENDER = ["Woman","Man","Nonbinary","Something else","Prefer not to say"];
 const EDU = ["Less than high school","High school","Some college","2-year degree","4-year degree","Professional degree","Doctorate","Other"];
-const EMOTIONS = ["Hope","Fear","Anger","Pride","Courage","Isolation","Frustration","Determination","Belonging","Hopelessness","Anxiety","Solidarity","Joy","Burnout"];
+const EMOTIONS = ["Hope","Fear","Anger","Pride","Courage","Isolation","Frustration","Determination","Belonging","Hopelessness","Anxiety","Solidarity","Joy","Burnout","Dignity","Shame","Weariness"];
 
 /* ---------- state ---------- */
 const state = { answers:{}, demo:{}, emotions:{} };
-let step = 0; // 0 cover, 1..4 constructs, 5 context, 6 results
-const TOTAL = 6;
+let step = 0; // 0 cover, 1..4 constructs, 5 experience, 6 about you, 7 results
+const TOTAL = 7;
 
 const stage = document.getElementById('stage');
 const rail = document.getElementById('rail');
@@ -225,8 +225,9 @@ function render(){
   window.scrollTo({top:0,behavior:'instant'});
   if(step===0) return renderCover();
   if(step>=1 && step<=4) return renderConstruct(step-1);
-  if(step===5) return renderContext();
-  if(step===6) return renderResults();
+  if(step===5) return renderExperience();
+  if(step===6) return renderAbout();
+  if(step===7) return renderResults();
 }
 
 function renderCover(){
@@ -299,7 +300,37 @@ function answer(id,k){
   renderConstruct(step-1);
 }
 
-function renderContext(){
+function renderExperience(){
+  stage.innerHTML = `
+    <div class="sec-head">
+      <div class="sec-label">Your experience</div>
+      <h2 class="sec-title">Your recent experience</h2>
+      <p class="sec-desc">A few questions about your civic and political life and how it has felt.</p>
+    </div>
+
+    <div class="field">
+      <label>${RECALL.replace('In','Over')}, how often have you taken part in political education or training?</label>
+      <div class="pill-row">${ANCHORS.map((a,k)=>`<button class="pill ${state.demo.poled===k?'sel':''}" onclick="state.demo.poled=${k};renderExperience()">${a}</button>`).join('')}</div>
+    </div>
+
+    <div class="field" style="margin-top:28px">
+      <label>Growing up, I believed my group could shape the world around it.</label>
+      <div class="pill-row">${["Strongly disagree","Disagree","Neutral","Agree","Strongly agree"].map((a,k)=>`<button class="pill ${state.demo.precond===k?'sel':''}" onclick="state.demo.precond=${k};renderExperience()">${a}</button>`).join('')}</div>
+    </div>
+
+    <div class="field" style="margin-top:28px">
+      <label>${RECALL}, which have you felt about your civic or political life? <span class="opt-note">select all that apply</span></label>
+      <div class="pill-row">${EMOTIONS.map(e=>`<button class="pill ${state.emotions[e]?'sel':''}" onclick="state.emotions['${e}']=!state.emotions['${e}'];renderExperience()">${e}</button>`).join('')}</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="go(4)">← Back</button>
+      <button class="btn btn-primary" onclick="go(6)">Continue →</button>
+    </div>
+  `;
+}
+
+function renderAbout(){
   stage.innerHTML = `
     <div class="sec-head">
       <div class="sec-label">About you</div>
@@ -325,24 +356,9 @@ function renderContext(){
       <div style="flex:2"><label>Highest education</label><select onchange="state.demo.edu=this.value">${optList(EDU, state.demo.edu)}</select></div>
     </div>
 
-    <div class="field" style="margin-top:28px">
-      <label>${RECALL.replace('In','Over')}, how often have you taken part in political education or training?</label>
-      <div class="pill-row">${ANCHORS.map((a,k)=>`<button class="pill ${state.demo.poled===k?'sel':''}" onclick="state.demo.poled=${k};renderContext()">${a}</button>`).join('')}</div>
-    </div>
-
-    <div class="field">
-      <label>Growing up, I believed my group could shape the world around it.</label>
-      <div class="pill-row">${["Strongly disagree","Disagree","Neutral","Agree","Strongly agree"].map((a,k)=>`<button class="pill ${state.demo.precond===k?'sel':''}" onclick="state.demo.precond=${k};renderContext()">${a}</button>`).join('')}</div>
-    </div>
-
-    <div class="field" style="margin-top:28px">
-      <label>${RECALL}, which have you felt about your civic or political life? <span class="opt-note">select all that apply</span></label>
-      <div class="pill-row">${EMOTIONS.map(e=>`<button class="pill ${state.emotions[e]?'sel':''}" onclick="state.emotions['${e}']=!state.emotions['${e}'];renderContext()">${e}</button>`).join('')}</div>
-    </div>
-
     <div class="nav">
-      <button class="btn btn-ghost" onclick="go(4)">← Back</button>
-      <button class="btn btn-primary" onclick="go(6)">See results →</button>
+      <button class="btn btn-ghost" onclick="go(5)">← Back</button>
+      <button class="btn btn-primary" onclick="go(7)">See results →</button>
     </div>
   `;
 }
