@@ -14,6 +14,7 @@
     --ink:#18181b; --ink-2:#27272a; --mute:#71717a;
     --cobalt:#5c7dfa; --cobalt-deep:#3e4f6e; --cobalt-soft:#c5d0fc;
     --terracotta:#b7432b; --olive:#5b7a3a; --amber:#c99633; --teal:#0e8a78;
+    --dim-1:#5c7dfa; --dim-2:#9b7ef0; --dim-3:#21b0a1; --dim-4:#5bb36f;
     --signal-green:#22c55e; --signal-yellow:#eab308;
     --display:"Archivo Narrow",-apple-system,system-ui,sans-serif;
     --sans:"DM Sans",-apple-system,system-ui,sans-serif;
@@ -168,28 +169,28 @@ const RECALL = "In the last 3 months"; // validation scale window; PICO deployme
 const ANCHORS = ["Never","Almost never","Sometimes","Fairly often","Very often"]; // PSS 0-4
 
 const CONSTRUCTS = [
-  { key:"personal", label:"Personal agency", color:"var(--cobalt)",
+  { key:"personal", label:"Personal agency", color:"var(--dim-1)",
     desc:"Am I the author of my own action?",
     items:[
       {t:"felt able to act on what matters to you"},
       {t:"felt stuck, even when you wanted to act", rev:true},
       {t:"felt confident you could figure out how to do something about a problem in front of you"},
     ]},
-  { key:"articulation", label:"Articulation", color:"var(--olive)",
+  { key:"articulation", label:"Articulation", color:"var(--dim-2)",
     desc:"Can I name what I and others want, and why?",
     items:[
       {t:"felt able to put into words what you want to change"},
       {t:"felt clear about why something matters to you"},
       {t:"felt unable to explain what you and others are working toward", rev:true},
     ]},
-  { key:"participatory", label:"Participatory efficacy", color:"var(--amber)",
+  { key:"participatory", label:"Participatory efficacy", color:"var(--dim-3)",
     desc:"Does my contribution matter to our shared result?",
     items:[
       {t:"felt that what you do makes a real difference to what your group can achieve"},
       {t:"felt that your participation was basically interchangeable with anyone else's", rev:true},
       {t:"felt capable of bringing others in and helping them grow as leaders"},
     ]},
-  { key:"collective", label:"Collective efficacy with horizon", color:"var(--teal)",
+  { key:"collective", label:"Collective efficacy with horizon", color:"var(--dim-4)",
     desc:"Can we, working together, build toward something real?",
     items:[
       {t:"felt that when people like you act together, you have power to influence decisions made by institutions and leaders"},
